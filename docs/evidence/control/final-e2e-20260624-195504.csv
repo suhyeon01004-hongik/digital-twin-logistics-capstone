@@ -1,0 +1,3 @@
+scenario,phase,startId,caseIndex,targetId,activeBefore,loadedCount,loadFractionBefore,steps,success,collision,rotation,refuge,reinsert,refugeDelta,reinsertDelta,waitTotal,sawMode27,sawF1Camera,sawYoloAligned,sawWaitSidePush,message
+baseline_measured_a,load,1,0,0,51,51,0.760984368398817,84760,1,0,0,0,0,0,0,0,0,0,0,0,capacity_finalized | IDLE
+baseline_measured_a,scan,1,1,2,51,51,0.760984368398817,42000,0,0,0,0,0,0,0,0,0,0,0,0,CIRCULATION WAIT P2

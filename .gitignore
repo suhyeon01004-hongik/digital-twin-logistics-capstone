@@ -1,0 +1,40 @@
+# ROS 2 / colcon outputs
+ros2_ws/build/
+ros2_ws/install/
+ros2_ws/log/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv*/
+.pytest_cache/
+
+# Local runtime artifacts
+artifacts/**
+!artifacts/README.md
+data/local/**
+!data/local/.gitkeep
+runs/
+*.log
+
+# Model and dataset binaries
+*.pt
+*.engine
+*.onnx
+*.zip
+*.tar
+*.tar.gz
+
+# MATLAB / Simulink generated files
+slprj/
+*.slxc
+*.autosave
+*.asv
+matlab/**/outputs/
+matlab/tests/runs/
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

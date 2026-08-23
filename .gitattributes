@@ -1,0 +1,12 @@
+* text=auto eol=lf
+
+*.engine binary
+*.mat binary
+*.onnx binary
+*.pt binary
+*.slx binary
+*.jpg binary
+*.jpeg binary
+*.png binary
+*.gif binary
+*.mp4 binary

@@ -1,0 +1,7 @@
+Flask>=2.2,<4
+numpy==1.26.4
+Pillow>=9.0,<12
+pyserial==3.5
+pyzbar==0.1.9
+qrcode[pil]>=7.4,<9
+ultralytics==8.4.67

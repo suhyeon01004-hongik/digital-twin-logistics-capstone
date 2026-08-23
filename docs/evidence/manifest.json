@@ -1,0 +1,74 @@
+{
+  "files": [
+    {
+      "path": "control/final-e2e-20260624-195504.csv",
+      "bytes": 448,
+      "sha256": "63d37565e37aded9873b7475c86a1d875cc6909dd6276fe7ddf772b800f145e6"
+    },
+    {
+      "path": "control/parcel-regression-20260624-194647.csv",
+      "bytes": 968,
+      "sha256": "e625a48e685f87978469e911762199662a07d9e82da8e16e747813dc5d59c498"
+    },
+    {
+      "path": "control/parcel-regression-target-steps.png",
+      "bytes": 56293,
+      "sha256": "d07782c14f2463d4d65813b7662f5293a07be16937505748a9ac693071091824"
+    },
+    {
+      "path": "perception/obb-training-config.yaml",
+      "bytes": 279,
+      "sha256": "4fe81fb5cbf7c3642e7f2e6d9e6d3b729278e6fe651fa5020a707a49c81f92fa"
+    },
+    {
+      "path": "perception/obb-training-metrics.png",
+      "bytes": 117352,
+      "sha256": "13f3618200c8a74064052be7e032bb38a996f353add0554991adcc0bfd372095"
+    },
+    {
+      "path": "perception/obb-training-results.csv",
+      "bytes": 19690,
+      "sha256": "6dd9f4022c37adfa145a9a2ee861d7efacc71f8ab06f7fa404b670b21fe0f55d"
+    },
+    {
+      "path": "perception/registration-measurement-summary.png",
+      "bytes": 74371,
+      "sha256": "68e262d5b88873899ec0962a4b1e3fafe53b4f52b921ac2e17910efcf31b2a98"
+    },
+    {
+      "path": "perception/registration-montage.jpg",
+      "bytes": 376551,
+      "sha256": "9b294c3041c9041bbb9ec7d163e7bcd6a64815d7daa640dffa334ea3180d9763"
+    },
+    {
+      "path": "perception/registration-results.csv",
+      "bytes": 640,
+      "sha256": "4615b8b69ae1222b0d73b05936f67d3cfc4f2bbde92f6ee11e62075c929bbab9"
+    },
+    {
+      "path": "perception/segmentation-confusion-matrix.png",
+      "bytes": 96257,
+      "sha256": "660e7aaee8eeb7272d12cf53ae4c5b34f3f74bc42018d6bde78f6b25ebdd4994"
+    },
+    {
+      "path": "perception/segmentation-training-config.yaml",
+      "bytes": 274,
+      "sha256": "7f96569fa9fe632c5a8a4edb706a9f2a4ab4e5001b6edad82d194cdee375c80e"
+    },
+    {
+      "path": "perception/segmentation-training-metrics.png",
+      "bytes": 128158,
+      "sha256": "24a986be74e826c09cb560e7ccf6e058ffdbedb9a0dbf8358a3b2b1625416afb"
+    },
+    {
+      "path": "perception/segmentation-training-results.csv",
+      "bytes": 5368,
+      "sha256": "d3c0e460b5f797b4dc12ae818752a99d6b36ae5624de156e67c4f45afeb43c27"
+    },
+    {
+      "path": "README.md",
+      "bytes": 5269,
+      "sha256": "8ba4e0062bb27f6c9dc4eec30020104359b01f6ba993165d8dbd6fa051e7623b"
+    }
+  ]
+}

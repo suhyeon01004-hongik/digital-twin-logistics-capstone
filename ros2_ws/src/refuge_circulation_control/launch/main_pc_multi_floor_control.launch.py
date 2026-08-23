@@ -1,0 +1,245 @@
+import os
+
+from launch import LaunchDescription
+from launch.actions import DeclareLaunchArgument
+from launch.substitutions import LaunchConfiguration
+from launch_ros.actions import Node
+from launch_ros.parameter_descriptions import ParameterValue
+
+from refuge_circulation_control.runtime_paths import repository_root
+
+
+REPOSITORY_ROOT = repository_root(__file__)
+DEFAULT_TWIN_DIR = os.environ.get(
+    "MILEMATE_TWIN_DIR",
+    str(REPOSITORY_ROOT / "matlab" / "digital_twin"),
+)
+
+
+def floor_prefix(floor: int) -> str:
+    return f"/refuge/floor{floor}"
+
+
+def supervisor_node(floor: int, args: dict):
+    prefix = floor_prefix(floor)
+    return Node(
+        package="refuge_circulation_control",
+        executable="supervisor",
+        name=f"refuge_supervisor_floor{floor}",
+        output="screen",
+        parameters=[{
+            "floor_id": floor,
+            "control_cmd_topic": f"{prefix}/control_cmd",
+            "status_topic": f"{prefix}/status",
+            "db_topic": f"{prefix}/db",
+            "log_topic": f"{prefix}/log",
+            "motion_event_topic": f"{prefix}/motion_event",
+            "publish_floor_topics": False,
+            "use_tof": ParameterValue(args["use_tof"], value_type=bool),
+            "tof_hard_gate": ParameterValue(args["tof_hard_gate"], value_type=bool),
+            "default_rpm": ParameterValue(args["default_rpm"], value_type=float),
+            "kp": ParameterValue(args["kp"], value_type=float),
+            "ki": ParameterValue(args["ki"], value_type=float),
+            "kd": ParameterValue(args["kd"], value_type=float),
+            "slowdown_mm": ParameterValue(args["slowdown_mm"], value_type=float),
+            "min_move_rpm": ParameterValue(args["min_move_rpm"], value_type=float),
+            "pwm_step": ParameterValue(args["pwm_step"], value_type=int),
+            "compact_reverse_rpm": ParameterValue(args["compact_reverse_rpm"], value_type=float),
+        }],
+    )
+
+
+def twin_node(floor: int, args: dict):
+    prefix = floor_prefix(floor)
+    render_dir = args[f"twin_render_dir_floor{floor}"]
+    matlab_dir = args[f"matlab_server_dir_floor{floor}"]
+    return Node(
+        package="refuge_circulation_control",
+        executable="digital_twin_compare",
+        name=f"refuge_digital_twin_compare_floor{floor}",
+        output="screen",
+        parameters=[{
+            "work_dir": args["twin_work_dir"],
+            "floor_id": floor,
+            "render_dir": render_dir,
+            "use_matlab_server": ParameterValue(args["use_matlab_server"], value_type=bool),
+            "matlab_server_dir": matlab_dir,
+            "status_topic": f"{prefix}/status",
+            "db_topic": f"{prefix}/db",
+            "twin_cmd_topic": f"{prefix}/twin_cmd",
+            "control_cmd_topic": f"{prefix}/control_cmd",
+            "twin_state_topic": f"{prefix}/twin_state",
+            "log_topic": f"{prefix}/log",
+            "platform_loading_cmd_topic": "/platform/loading_cmd",
+            "platform_loading_state_topic": "/platform/loading_state",
+            "auto_min_hardware_move_mm": ParameterValue(args["auto_min_hardware_move_mm"], value_type=float),
+            "matlab_motion_only": ParameterValue(args["matlab_motion_only"], value_type=bool),
+            "receiver_gap_compact_enabled": ParameterValue(args["receiver_gap_compact_enabled"], value_type=bool),
+            "tof_correction_enabled": ParameterValue(args["tof_correction_enabled"], value_type=bool),
+            "tof_correction_step_mm": ParameterValue(args["tof_correction_step_mm"], value_type=float),
+            "tof_correction_max_mm": ParameterValue(args["tof_correction_max_mm"], value_type=float),
+            "tof_box_correction_max_mm": ParameterValue(args["tof_box_correction_max_mm"], value_type=float),
+            "tof_box_correction_margin_mm": ParameterValue(args["tof_box_correction_margin_mm"], value_type=float),
+            "tof_command_underrun_mm": ParameterValue(args["tof_command_underrun_mm"], value_type=float),
+            "tof_empty_extra_mm": ParameterValue(args["tof_empty_extra_mm"], value_type=float),
+            "tof_gap_prepare_step_mm": ParameterValue(args["tof_gap_prepare_step_mm"], value_type=float),
+            "tof_gap_prepare_max_mm": ParameterValue(args["tof_gap_prepare_max_mm"], value_type=float),
+            "b4_to_b1_handoff_adjust_mm": ParameterValue(args["b4_to_b1_handoff_adjust_mm"], value_type=float),
+            "platform_unload_drop_delta_mm": ParameterValue(args["platform_unload_drop_delta_mm"], value_type=float),
+            "manual_load_fast_rpm": ParameterValue(args["manual_load_fast_rpm"], value_type=float),
+            "manual_load_fast_overtravel_mm": ParameterValue(args["manual_load_fast_overtravel_mm"], value_type=float),
+            "manual_load_fast_short_belt_overtravel_mm": ParameterValue(
+                args["manual_load_fast_short_belt_overtravel_mm"],
+                value_type=float,
+            ),
+            "manual_load_b1_extra_overtravel_mm": ParameterValue(args["manual_load_b1_extra_overtravel_mm"], value_type=float),
+            "manual_load_b2_extra_overtravel_mm": ParameterValue(args["manual_load_b2_extra_overtravel_mm"], value_type=float),
+            "manual_load_b4_extra_overtravel_mm": ParameterValue(args["manual_load_b4_extra_overtravel_mm"], value_type=float),
+            "manual_load_b4_after_push_mm": ParameterValue(args["manual_load_b4_after_push_mm"], value_type=float),
+            "manual_load_b4_pack_mm": ParameterValue(args["manual_load_b4_pack_mm"], value_type=float),
+            "manual_load_b4_barrier_confirm_timeout_sec": ParameterValue(
+                args["manual_load_b4_barrier_confirm_timeout_sec"],
+                value_type=float,
+            ),
+            "manual_load_fast_burst_mm": ParameterValue(args["manual_load_fast_burst_mm"], value_type=float),
+            "manual_load_fast_burst_rpm": ParameterValue(args["manual_load_fast_burst_rpm"], value_type=float),
+            "manual_load_reverse_release_enabled": ParameterValue(args["manual_load_reverse_release_enabled"], value_type=bool),
+            "manual_load_reverse_release_sec": ParameterValue(args["manual_load_reverse_release_sec"], value_type=float),
+            "manual_load_reverse_release_rpm": ParameterValue(args["manual_load_reverse_release_rpm"], value_type=float),
+            "manual_load_empty_gap_tof_slack_mm": ParameterValue(args["manual_load_empty_gap_tof_slack_mm"], value_type=float),
+            "manual_load_b2_target_gap_extra_mm": ParameterValue(args["manual_load_b2_target_gap_extra_mm"], value_type=float),
+            "manual_load_b2_final_realign_underrun_mm": ParameterValue(
+                args["manual_load_b2_final_realign_underrun_mm"],
+                value_type=float,
+            ),
+            "manual_load_b3_final_realign_underrun_mm": ParameterValue(
+                args["manual_load_b3_final_realign_underrun_mm"],
+                value_type=float,
+            ),
+        }],
+    )
+
+
+def generate_launch_description():
+    args = {
+        "web_host": LaunchConfiguration("web_host"),
+        "web_port": LaunchConfiguration("web_port"),
+        "use_tof": LaunchConfiguration("use_tof"),
+        "tof_hard_gate": LaunchConfiguration("tof_hard_gate"),
+        "default_rpm": LaunchConfiguration("default_rpm"),
+        "kp": LaunchConfiguration("kp"),
+        "ki": LaunchConfiguration("ki"),
+        "kd": LaunchConfiguration("kd"),
+        "slowdown_mm": LaunchConfiguration("slowdown_mm"),
+        "min_move_rpm": LaunchConfiguration("min_move_rpm"),
+        "pwm_step": LaunchConfiguration("pwm_step"),
+        "compact_reverse_rpm": LaunchConfiguration("compact_reverse_rpm"),
+        "twin_work_dir": LaunchConfiguration("twin_work_dir"),
+        "twin_render_dir_floor1": LaunchConfiguration("twin_render_dir_floor1"),
+        "twin_render_dir_floor2": LaunchConfiguration("twin_render_dir_floor2"),
+        "use_matlab_server": LaunchConfiguration("use_matlab_server"),
+        "matlab_server_dir_floor1": LaunchConfiguration("matlab_server_dir_floor1"),
+        "matlab_server_dir_floor2": LaunchConfiguration("matlab_server_dir_floor2"),
+        "auto_min_hardware_move_mm": LaunchConfiguration("auto_min_hardware_move_mm"),
+        "matlab_motion_only": LaunchConfiguration("matlab_motion_only"),
+        "receiver_gap_compact_enabled": LaunchConfiguration("receiver_gap_compact_enabled"),
+        "tof_correction_enabled": LaunchConfiguration("tof_correction_enabled"),
+        "tof_correction_step_mm": LaunchConfiguration("tof_correction_step_mm"),
+        "tof_correction_max_mm": LaunchConfiguration("tof_correction_max_mm"),
+        "tof_box_correction_max_mm": LaunchConfiguration("tof_box_correction_max_mm"),
+        "tof_box_correction_margin_mm": LaunchConfiguration("tof_box_correction_margin_mm"),
+        "tof_command_underrun_mm": LaunchConfiguration("tof_command_underrun_mm"),
+        "tof_empty_extra_mm": LaunchConfiguration("tof_empty_extra_mm"),
+        "tof_gap_prepare_step_mm": LaunchConfiguration("tof_gap_prepare_step_mm"),
+        "tof_gap_prepare_max_mm": LaunchConfiguration("tof_gap_prepare_max_mm"),
+        "b4_to_b1_handoff_adjust_mm": LaunchConfiguration("b4_to_b1_handoff_adjust_mm"),
+        "platform_unload_drop_delta_mm": LaunchConfiguration("platform_unload_drop_delta_mm"),
+        "manual_load_fast_rpm": LaunchConfiguration("manual_load_fast_rpm"),
+        "manual_load_fast_overtravel_mm": LaunchConfiguration("manual_load_fast_overtravel_mm"),
+        "manual_load_fast_short_belt_overtravel_mm": LaunchConfiguration("manual_load_fast_short_belt_overtravel_mm"),
+        "manual_load_b1_extra_overtravel_mm": LaunchConfiguration("manual_load_b1_extra_overtravel_mm"),
+        "manual_load_b2_extra_overtravel_mm": LaunchConfiguration("manual_load_b2_extra_overtravel_mm"),
+        "manual_load_b4_extra_overtravel_mm": LaunchConfiguration("manual_load_b4_extra_overtravel_mm"),
+        "manual_load_b4_after_push_mm": LaunchConfiguration("manual_load_b4_after_push_mm"),
+        "manual_load_b4_pack_mm": LaunchConfiguration("manual_load_b4_pack_mm"),
+        "manual_load_b4_barrier_confirm_timeout_sec": LaunchConfiguration("manual_load_b4_barrier_confirm_timeout_sec"),
+        "manual_load_fast_burst_mm": LaunchConfiguration("manual_load_fast_burst_mm"),
+        "manual_load_fast_burst_rpm": LaunchConfiguration("manual_load_fast_burst_rpm"),
+        "manual_load_reverse_release_enabled": LaunchConfiguration("manual_load_reverse_release_enabled"),
+        "manual_load_reverse_release_sec": LaunchConfiguration("manual_load_reverse_release_sec"),
+        "manual_load_reverse_release_rpm": LaunchConfiguration("manual_load_reverse_release_rpm"),
+        "manual_load_empty_gap_tof_slack_mm": LaunchConfiguration("manual_load_empty_gap_tof_slack_mm"),
+        "manual_load_b2_target_gap_extra_mm": LaunchConfiguration("manual_load_b2_target_gap_extra_mm"),
+        "manual_load_b2_final_realign_underrun_mm": LaunchConfiguration("manual_load_b2_final_realign_underrun_mm"),
+        "manual_load_b3_final_realign_underrun_mm": LaunchConfiguration("manual_load_b3_final_realign_underrun_mm"),
+    }
+
+    return LaunchDescription([
+        DeclareLaunchArgument("web_host", default_value="0.0.0.0"),
+        DeclareLaunchArgument("web_port", default_value="5000"),
+        DeclareLaunchArgument("use_tof", default_value="true"),
+        DeclareLaunchArgument("tof_hard_gate", default_value="false"),
+        DeclareLaunchArgument("default_rpm", default_value="45.0"),
+        DeclareLaunchArgument("kp", default_value="0.8"),
+        DeclareLaunchArgument("ki", default_value="0.30"),
+        DeclareLaunchArgument("kd", default_value="0.0"),
+        DeclareLaunchArgument("slowdown_mm", default_value="25.0"),
+        DeclareLaunchArgument("min_move_rpm", default_value="25.0"),
+        DeclareLaunchArgument("pwm_step", default_value="25"),
+        DeclareLaunchArgument("compact_reverse_rpm", default_value="200.0"),
+        DeclareLaunchArgument("twin_work_dir", default_value=DEFAULT_TWIN_DIR),
+        DeclareLaunchArgument("twin_render_dir_floor1", default_value="/tmp/refuge_twin_render_f1"),
+        DeclareLaunchArgument("twin_render_dir_floor2", default_value="/tmp/refuge_twin_render_f2"),
+        DeclareLaunchArgument("use_matlab_server", default_value="true"),
+        DeclareLaunchArgument("matlab_server_dir_floor1", default_value="/tmp/refuge_matlab_server_f1"),
+        DeclareLaunchArgument("matlab_server_dir_floor2", default_value="/tmp/refuge_matlab_server_f2"),
+        DeclareLaunchArgument("auto_min_hardware_move_mm", default_value="10.0"),
+        DeclareLaunchArgument("matlab_motion_only", default_value="true"),
+        DeclareLaunchArgument("receiver_gap_compact_enabled", default_value="true"),
+        DeclareLaunchArgument("tof_correction_enabled", default_value="true"),
+        DeclareLaunchArgument("tof_correction_step_mm", default_value="8.0"),
+        DeclareLaunchArgument("tof_correction_max_mm", default_value="15.0"),
+        DeclareLaunchArgument("tof_box_correction_max_mm", default_value="90.0"),
+        DeclareLaunchArgument("tof_box_correction_margin_mm", default_value="4.0"),
+        DeclareLaunchArgument("tof_command_underrun_mm", default_value="2.0"),
+        DeclareLaunchArgument("tof_empty_extra_mm", default_value="0.0"),
+        DeclareLaunchArgument("tof_gap_prepare_step_mm", default_value="8.0"),
+        DeclareLaunchArgument("tof_gap_prepare_max_mm", default_value="20.0"),
+        DeclareLaunchArgument("b4_to_b1_handoff_adjust_mm", default_value="0.0"),
+        DeclareLaunchArgument("platform_unload_drop_delta_mm", default_value="250.0"),
+        DeclareLaunchArgument("manual_load_fast_rpm", default_value="200.0"),
+        DeclareLaunchArgument("manual_load_fast_overtravel_mm", default_value="350.0"),
+        DeclareLaunchArgument("manual_load_fast_short_belt_overtravel_mm", default_value="350.0"),
+        DeclareLaunchArgument("manual_load_b1_extra_overtravel_mm", default_value="0.0"),
+        DeclareLaunchArgument("manual_load_b2_extra_overtravel_mm", default_value="100.0"),
+        DeclareLaunchArgument("manual_load_b4_extra_overtravel_mm", default_value="0.0"),
+        DeclareLaunchArgument("manual_load_b4_after_push_mm", default_value="100.0"),
+        DeclareLaunchArgument("manual_load_b4_pack_mm", default_value="30.0"),
+        DeclareLaunchArgument("manual_load_b4_barrier_confirm_timeout_sec", default_value="25.0"),
+        DeclareLaunchArgument("manual_load_fast_burst_mm", default_value="0.0"),
+        DeclareLaunchArgument("manual_load_fast_burst_rpm", default_value="200.0"),
+        DeclareLaunchArgument("manual_load_reverse_release_enabled", default_value="false"),
+        DeclareLaunchArgument("manual_load_reverse_release_sec", default_value="6.0"),
+        DeclareLaunchArgument("manual_load_reverse_release_rpm", default_value="200.0"),
+        DeclareLaunchArgument("manual_load_empty_gap_tof_slack_mm", default_value="15.0"),
+        DeclareLaunchArgument("manual_load_b2_target_gap_extra_mm", default_value="10.0"),
+        DeclareLaunchArgument("manual_load_b2_final_realign_underrun_mm", default_value="25.0"),
+        DeclareLaunchArgument("manual_load_b3_final_realign_underrun_mm", default_value="20.0"),
+        supervisor_node(1, args),
+        supervisor_node(2, args),
+        twin_node(1, args),
+        twin_node(2, args),
+        Node(
+            package="refuge_circulation_control",
+            executable="web_control",
+            name="refuge_web_control",
+            output="screen",
+            parameters=[{
+                "host": args["web_host"],
+                "port": ParameterValue(args["web_port"], value_type=int),
+                "twin_render_dir": args["twin_render_dir_floor1"],
+                "twin_render_dir_floor1": args["twin_render_dir_floor1"],
+                "twin_render_dir_floor2": args["twin_render_dir_floor2"],
+            }],
+        ),
+    ])

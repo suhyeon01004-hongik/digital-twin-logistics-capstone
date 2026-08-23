@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>platform_loading_control</name>
+  <version>0.1.0</version>
+  <description>Camera and platform loading integration for the refuge conveyor digital twin.</description>
+  <maintainer email="suhyeon01004-hongik@users.noreply.github.com">Suhyeon Lee</maintainer>
+  <license>Proprietary</license>
+
+  <buildtool_depend>ament_python</buildtool_depend>
+
+  <depend>rclpy</depend>
+  <depend>std_msgs</depend>
+  <depend>sensor_msgs</depend>
+
+  <exec_depend>python3-opencv</exec_depend>
+  <exec_depend>python3-serial</exec_depend>
+  <exec_depend>python3-pyzbar</exec_depend>
+  <exec_depend>python3-numpy</exec_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>

@@ -1,0 +1,14 @@
+task: obb
+model: yolo11s-obb.pt
+epochs: 200
+patience: 30
+batch: -1
+imgsz: 512
+optimizer: auto
+seed: 0
+deterministic: true
+pretrained: true
+amp: true
+lr0: 0.01
+weight_decay: 0.0005
+source_note: Machine-specific paths removed from the archived Ultralytics args file.

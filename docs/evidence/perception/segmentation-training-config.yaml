@@ -1,0 +1,14 @@
+task: segment
+model: last.pt
+epochs: 30
+patience: 10
+batch: 4
+imgsz: 640
+optimizer: auto
+seed: 0
+deterministic: true
+pretrained: true
+amp: true
+lr0: 0.01
+weight_decay: 0.0005
+source_note: Machine-specific paths removed from the archived Ultralytics args file.

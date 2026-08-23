@@ -1,0 +1,6 @@
+Regression suite start profile=quick scenarios=2
+SCENARIO baseline_quick config=baseline_sparse_circulation_20260615 belt=[0.498 1.080 0.498 1.080] weights=[1 1 1 1 1]
+baseline_quick | load | start=3 | idx=0 | target=0 | loaded/active=54 | load=80.7% | success=1 | col=0 | rot=0 | refuge=0(+0) | rein=0(+0) | steps=89960 | IDLE
+baseline_quick | scan | start=3 | idx=1 | target=55 | loaded/active=54 | load=80.7% | success=0 | col=0 | rot=0 | refuge=0(+0) | rein=0(+0) | steps=36000 | CIRCULATION WAIT P55
+Regression suite written summary=matlab/tests/baseline/parcel_regression_summary_20260624_200629.txt
+Regression suite failed cases=1

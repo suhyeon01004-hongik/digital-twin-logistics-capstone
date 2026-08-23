@@ -1,0 +1,11 @@
+Parcel manual regression suite
+
+total 2
+failures 1
+csv matlab/tests/baseline/parcel_regression_results_20260624_200629.csv
+mat matlab/tests/baseline/parcel_regression_results_20260624_200629.mat
+progress matlab/tests/baseline/parcel_regression_progress_20260624_200629.txt
+
+[baseline_quick] total 2 failures 1
+  load start 3 idx 0 target 0 active 54 load 80.7% success 1 col 0 rot 0 refuge 0 rein 0 steps 89960 | IDLE
+  scan start 3 idx 1 target 55 active 54 load 80.7% success 0 col 0 rot 0 refuge 0 rein 0 steps 36000 | CIRCULATION WAIT P55
