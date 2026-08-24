@@ -18,54 +18,20 @@ MileMate는 배송 차량 내부의 다층 폐루프 컨베이어를 **순환형
 ## 2. 배치 구조
 
 ```mermaid
-flowchart LR
-    PARCEL(["Parcel / operator"])
+flowchart TB
+    PC["PC · 상위 제어<br/>Hikrobot/OBB/QR 인지<br/>플랫폼 상태머신 · 택배 DB · 순환/하차 계획<br/>MATLAB/Simulink 디지털 트윈 · Web UI"]
+    PI["Raspberry Pi · 통신 중계<br/>arduino_bridge F1/F2<br/>ROS 2 토픽 ↔ USB Serial"]
 
-    subgraph MAIN["Main PC · Ubuntu 22.04 / ROS 2 Humble"]
-        HIK["hik_camera\nMVS frame publisher"]
-        PER["parcel_perception\nYOLO11s-OBB + QR"]
-        PM["platform_load_manager\nload / unload state machine"]
-        DT1["digital_twin_compare · F1"]
-        DT2["digital_twin_compare · F2"]
-        MAT["MATLAB / Simulink\ncandidate simulation core"]
-        S1["supervisor · F1\nDB + move orchestration"]
-        S2["supervisor · F2\nDB + move orchestration"]
-        WEB["web_control\noperator UI + state log"]
+    subgraph ARDUINO["Arduino Mega · 하위 제어"]
+        A1["Floor 1<br/>B1-B4 · Encoder · ToF · E-stop"]
+        A2["Floor 2<br/>B1-B4 · Encoder · ToF · E-stop"]
+        AP["Platform<br/>Lift · Pusher · Yaw · Barrier · Unload plate"]
     end
 
-    subgraph RPI["Raspberry Pi · ROS 2 serial gateway"]
-        B1["arduino_bridge · F1"]
-        B2["arduino_bridge · F2"]
-    end
-
-    subgraph LOW["Low-level controllers"]
-        A1["Arduino Mega · F1\nB1-B4 / encoders / ToF / E-stop"]
-        A2["Arduino Mega · F2\nB1-B4 / encoders / ToF / E-stop"]
-        AP["Arduino Mega · platform\nlift / pusher / yaw / barriers / unload plate"]
-    end
-
-    PARCEL --> HIK
-    HIK -->|"/hik_camera/rgb/compressed"| PER
-    PER -->|"/platform/parcel_detection"| PM
-
-    PM <-->|"load plan / loading state"| DT1
-    PM <-->|"load plan / loading state"| DT2
-    PM <-->|"USB Serial · 9600 baud"| AP
-
-    DT1 <-.->|"optional MATLAB server / adapter"| MAT
-    DT2 <-.->|"optional MATLAB server / adapter"| MAT
-    DT1 <-->|"DB · status · control"| S1
-    DT2 <-->|"DB · status · control"| S2
-
-    S1 <-->|"ROS 2 floor topics"| B1
-    S2 <-->|"ROS 2 floor topics"| B2
-    B1 <-->|"USB Serial · 115200 baud"| A1
-    B2 <-->|"USB Serial · 115200 baud"| A2
-
-    WEB <-->|"commands / state / logs"| DT1
-    WEB <-->|"commands / state / logs"| DT2
-    WEB <-->|"floor state"| S1
-    WEB <-->|"floor state"| S2
+    PC <-->|"ROS 2 DDS"| PI
+    PI <-->|"USB Serial · 115200"| A1
+    PI <-->|"USB Serial · 115200"| A2
+    PC <-->|"USB Serial · 9600"| AP
 ```
 
 ### 실행 위치와 책임

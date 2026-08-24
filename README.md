@@ -27,36 +27,18 @@ MATLAB/Simulink와 실제 장비가 없어 전체 빌드 및 실기 E2E는 아�
 액추에이터 구동을 담당합니다.
 
 ```mermaid
-flowchart LR
-    subgraph PC["Main PC · Ubuntu 22.04 / ROS 2 Humble"]
-        CAM["Hikrobot camera node"]
-        PER["OBB + QR perception"]
-        PLAT["Platform load manager"]
-        TWIN["Digital-twin compare / planner"]
-        MATLAB["MATLAB / Simulink core"]
-        SUP["Floor supervisors · F1/F2"]
-        UI["Web control + logs"]
+flowchart TB
+    PC["PC · 상위 제어<br/>인지 · DB · 적재/하차 계획 · 디지털 트윈 · UI"]
+    PI["Raspberry Pi · 통신 중계<br/>ROS 2 ↔ 층별 USB Serial"]
+
+    subgraph ARD["Arduino Mega · 하위 제어"]
+        FLOOR["층별 제어기 F1/F2<br/>벨트 · 엔코더 · ToF · E-stop"]
+        PLATFORM["플랫폼 제어기<br/>리프트 · 푸셔 · yaw · 배리어 · 하차판"]
     end
 
-    subgraph PI["Raspberry Pi"]
-        BR["Serial bridges · F1/F2"]
-    end
-
-    subgraph MCU["Arduino Mega controllers"]
-        FLOOR["Floor belts · encoder · ToF · E-stop"]
-        PLATFORM["Lift · pusher · yaw · barriers · unload plate"]
-    end
-
-    CAM -->|"compressed image"| PER
-    PER -->|"parcel geometry / QR"| PLAT
-    PLAT <-->|"load plan / platform state"| TWIN
-    TWIN <-.->|"candidate simulation"| MATLAB
-    TWIN <-->|"DB / status / motion command"| SUP
-    UI <-->|"command / state / log"| TWIN
-    UI <-->|"floor state"| SUP
-    SUP <-->|"ROS 2 floor topics"| BR
-    BR <-->|"USB Serial · 115200"| FLOOR
-    PLAT <-->|"USB Serial · 9600"| PLATFORM
+    PC <-->|"ROS 2 DDS"| PI
+    PI <-->|"Floor Serial · 115200"| FLOOR
+    PC <-->|"Platform Serial · 9600"| PLATFORM
 ```
 
 - **Main PC:** 인식, 적재·하차 상태머신, 택배 DB, 순환 계획, 웹 UI와 디지털 트윈
