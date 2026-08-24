@@ -20,22 +20,53 @@ MATLAB/Simulink와 실제 장비가 없어 전체 빌드 및 실기 E2E는 아�
 이 결과는 현재 선택한 제어 코어보다 이전 기록이므로 현재 코드의 실패/통과
 판정으로 재사용하지 않고 재현용 이력으로만 보존합니다.
 
-## 시스템 구성
+## 시스템 아키텍처
 
-```text
-Hikrobot camera -> OBB/QR perception -> platform load manager -> platform Arduino
-                                              |
-MATLAB digital twin <-> ROS 2 floor supervisors <-> Pi serial bridge -> floor Arduino(s)
-                                              |
-                                      web control / state log
+실제 2층 프로토타입은 Main PC, Raspberry Pi, Arduino Mega로 제어 책임을
+분리했습니다. 상위 계층은 택배 DB와 이동 계획을, 하위 계층은 센서 피드백과
+액추에이터 구동을 담당합니다.
+
+```mermaid
+flowchart LR
+    subgraph PC["Main PC · Ubuntu 22.04 / ROS 2 Humble"]
+        CAM["Hikrobot camera node"]
+        PER["OBB + QR perception"]
+        PLAT["Platform load manager"]
+        TWIN["Digital-twin compare / planner"]
+        MATLAB["MATLAB / Simulink core"]
+        SUP["Floor supervisors · F1/F2"]
+        UI["Web control + logs"]
+    end
+
+    subgraph PI["Raspberry Pi"]
+        BR["Serial bridges · F1/F2"]
+    end
+
+    subgraph MCU["Arduino Mega controllers"]
+        FLOOR["Floor belts · encoder · ToF · E-stop"]
+        PLATFORM["Lift · pusher · yaw · barriers · unload plate"]
+    end
+
+    CAM -->|"compressed image"| PER
+    PER -->|"parcel geometry / QR"| PLAT
+    PLAT <-->|"load plan / platform state"| TWIN
+    TWIN <-.->|"candidate simulation"| MATLAB
+    TWIN <-->|"DB / status / motion command"| SUP
+    UI <-->|"command / state / log"| TWIN
+    UI <-->|"floor state"| SUP
+    SUP <-->|"ROS 2 floor topics"| BR
+    BR <-->|"USB Serial · 115200"| FLOOR
+    PLAT <-->|"USB Serial · 9600"| PLATFORM
 ```
 
-- Main PC: 인식, 적재·하차 상태머신, 택배 DB, 순환 계획, 웹 UI, 디지털 트윈
-- Raspberry Pi: 층별 Arduino USB Serial과 ROS 2 토픽 사이의 브리지
-- 층별 Arduino Mega: B1~B4 모터, 엔코더, ToF와 E-stop 처리
-- 플랫폼 Arduino Mega: 리프트, 푸셔, yaw 회전판, 배리어, 하차 플레이트
+- **Main PC:** 인식, 적재·하차 상태머신, 택배 DB, 순환 계획, 웹 UI와 디지털 트윈
+- **Raspberry Pi:** 층별 Arduino USB Serial과 ROS 2 토픽 사이의 브리지
+- **층별 Arduino Mega:** B1~B4 모터, 엔코더, ToF와 E-stop 처리
+- **플랫폼 Arduino Mega:** 리프트, 푸셔, yaw 회전판, 배리어, 하차 플레이트
 
-자세한 흐름과 소유권 경계는 `docs/architecture/system-overview.md`에 정리했습니다.
+컴포넌트 책임, 적재·하차 시퀀스, 주요 ROS 2 토픽과 Serial 규약은
+[`docs/architecture/system-overview.md`](docs/architecture/system-overview.md)에
+정리했습니다.
 
 ## 저장소 구조
 
