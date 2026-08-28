@@ -17,8 +17,8 @@
     },
     {
       "path": "perception/obb-training-config.yaml",
-      "bytes": 279,
-      "sha256": "4fe81fb5cbf7c3642e7f2e6d9e6d3b729278e6fe651fa5020a707a49c81f92fa"
+      "bytes": 265,
+      "sha256": "f4b1bd8cd1c97430a27952207c106caf5db9a003c92bbfdb6ec38e629309b95a"
     },
     {
       "path": "perception/obb-training-metrics.png",
@@ -42,8 +42,8 @@
     },
     {
       "path": "perception/registration-results.csv",
-      "bytes": 640,
-      "sha256": "4615b8b69ae1222b0d73b05936f67d3cfc4f2bbde92f6ee11e62075c929bbab9"
+      "bytes": 636,
+      "sha256": "f3939ca010c99c2142caa0dbcadb174021b1997f9ffea6462c7ba19bf1aa7042"
     },
     {
       "path": "perception/segmentation-confusion-matrix.png",
@@ -52,8 +52,8 @@
     },
     {
       "path": "perception/segmentation-training-config.yaml",
-      "bytes": 274,
-      "sha256": "7f96569fa9fe632c5a8a4edb706a9f2a4ab4e5001b6edad82d194cdee375c80e"
+      "bytes": 260,
+      "sha256": "db43346c741dada6b239e92fa0579176289574ddff82221d0d82e4123aaa9d70"
     },
     {
       "path": "perception/segmentation-training-metrics.png",
