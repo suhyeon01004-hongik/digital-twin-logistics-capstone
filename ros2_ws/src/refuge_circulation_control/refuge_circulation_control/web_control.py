@@ -627,7 +627,7 @@ function updateMotionTuningInputs(mt){
 function planPackageId(move, fallbackText){
   if (move && move.handoff_id) return `P${move.handoff_id}`;
   const text = `${move?.message || ''} ${fallbackText || ''}`;
-  const m = text.match(/P(\d+)/i);
+  const m = text.match(/P(\\d+)/i);
   return m ? `P${m[1]}` : '';
 }
 function describeMove(move, fallbackMessage){
