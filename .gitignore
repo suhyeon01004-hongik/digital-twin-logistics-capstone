@@ -19,6 +19,9 @@ runs/
 
 # Model and dataset binaries
 *.pt
+!artifacts/models/
+!artifacts/models/box_obb_s_512/
+!artifacts/models/box_obb_s_512/best.pt
 *.engine
 *.onnx
 *.zip

@@ -58,7 +58,7 @@ firmware/      운용 펌웨어, 축별 bench test, legacy 이력
 matlab/        디지털 트윈 소스와 과거 회귀 기준값
 perception/    데이터 준비·학습·진단 도구와 모델 카드
 data/          데이터 정책과 매니페스트; 이미지·라벨은 Git 제외
-artifacts/     로컬 모델과 실행 산출물; Git 제외
+artifacts/     추론용 OBB 모델 포함; 그 밖의 실행 산출물은 Git 제외
 tests/         ROS 없이 실행 가능한 순수 로직·시리얼 수명주기 테스트
 docs/          아키텍처, 하드웨어, 이관 기록, 검증 문서
 scripts/       환경 설정과 자동 검사
@@ -97,15 +97,15 @@ Hikrobot 카메라는 별도 MVS SDK가 필요합니다. MATLAB 디지털 트윈
 
 ## 모델과 데이터셋
 
-추론 실행에는 학습 데이터셋이 필요하지 않지만 OBB 모델 파일은 필요합니다.
-팀 내부 보관본 또는 향후 Release 자산에서 다음 위치로 복사합니다.
+추론 실행에는 학습 데이터셋이 필요하지 않습니다. 필요한 OBB 모델 파일은
+저장소의 다음 위치에 포함되어 있습니다.
 
 ```text
 artifacts/models/box_obb_s_512/best.pt
 ```
 
-다른 위치라면 `MILEMATE_MODEL_PATH`를 지정할 수 있습니다. 복사 후 파일을
-검증합니다.
+다른 위치의 모델을 사용하려면 `MILEMATE_MODEL_PATH`를 지정할 수 있습니다.
+clone 후 기본 모델의 무결성을 검증합니다.
 
 ```bash
 python3 scripts/validate_runtime_assets.py
